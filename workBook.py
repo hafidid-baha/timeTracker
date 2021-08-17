@@ -26,7 +26,6 @@ class WorkBook:
         # self.create_date_cells(self.tasks_month, self.tasks_year, self.tasks_days)
         self.tasks = self.change_tasks_format()
         self.add_tasks_to_worksheet()
-        print("done")
         try:
             self.workbook.close()
         except xlsxwriter.exceptions.FileCreateError:
@@ -96,7 +95,10 @@ class WorkBook:
             date_cell_format.set_border(1)
             date_cell_format.set_bg_color(WorkBook.get_month_color(int(str(t[0]).split('/')[1])))
             if len(t[1]) > 1:
-                self.worksheet.merge_range(0, col + 1, 0, col + len(t[1]), str(t[0]), date_cell_format)
+                if len(list(dict.fromkeys(t[1]))) > 1:
+                    self.worksheet.merge_range(0, col + 1, 0, col + len(t[1]), str(t[0]), date_cell_format)
+                else:
+                    self.worksheet.write(0, col + 1, str(t[0]), date_cell_format)
                 days_cell_format = self.workbook.add_format({'bold': True, 'font_color': 'black', 'align': 'center'})
                 task_cell_format = self.workbook.add_format({'font_color': 'white', 'bg_color': '#52b788',
                                                              'align': 'center'})
@@ -108,14 +110,14 @@ class WorkBook:
                     h = t[2][index]
                     if h in range(4, 24):
                         self.worksheet.write(h-2, column+1, str(t[3][index]), task_cell_format)
-                    print(d, h)
                     if column < col + len(t[1]):
-                        column += 1
+                        if (index > 0 and t[1][index-1] != d) or (index == 0 and len(t[1]) > 1 and t[1][index+1] != d):
+                            column += 1
+                            continue
             else:
                 self.worksheet.write(0, col + len(t[1]), str(t[0]), date_cell_format)
                 self.worksheet.write(1, col + len(t[1]), t[1][0], days_cell_format)
             col += len(t[1])
-            print(t)
 
     def change_tasks_format(self):
         data = []
