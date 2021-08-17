@@ -12,6 +12,7 @@ class Database:
 
     def create_tables(self):
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS Tasks (id INTEGER PRIMARY KEY,task TEXT,date DateTime)''')
+        self.con.commit()
 
     def create_task(self, task):
         self.cursor.execute("INSERT INTO Tasks(task,date) VALUES (?,?)", (task, datetime.now()))

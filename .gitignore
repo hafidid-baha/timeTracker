@@ -2,3 +2,7 @@ venv
 test.xlsx
 time.db
 __pycache__
+main.spec
+timeTrucker.exe
+build
+dist

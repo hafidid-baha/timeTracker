@@ -1,3 +1,4 @@
+import sqlite3
 from tkinter import *
 from tkinter import messagebox
 from database import Database
@@ -24,7 +25,12 @@ class Ui:
         # create a text entry
         self.e = Entry(self.root, bg="#eee", fg="black")
         self.e.grid(row=0, sticky='we', column=0, columnspan=2, ipady=10, ipadx=10)
-        self.e.insert(0, Database.get_last_task()[0][1])
+        self.database = Database()
+        if len(Database.get_last_task())>0:
+            self.e.insert(0, Database.get_last_task()[0][1])
+        else:
+            self.e.insert(0, "No Tasks")
+
         self.e.focus()
         # create save task btn and export btn
         mbtn = Button(self.root, text="Save Task", padx=10, pady=5, command=self.save_task)
