@@ -96,28 +96,37 @@ class WorkBook:
             date_cell_format.set_bg_color(WorkBook.get_month_color(int(str(t[0]).split('/')[1])))
             if len(t[1]) > 1:
                 if len(list(dict.fromkeys(t[1]))) > 1:
-                    self.worksheet.merge_range(0, col + 1, 0, col + len(t[1]), str(t[0]), date_cell_format)
+                    self.worksheet.merge_range(0, col + 1, 0, col + len(list(dict.fromkeys(t[1]))), str(t[0]),
+                                               date_cell_format)
                 else:
                     self.worksheet.write(0, col + 1, str(t[0]), date_cell_format)
                 days_cell_format = self.workbook.add_format({'bold': True, 'font_color': 'black', 'align': 'center'})
                 task_cell_format = self.workbook.add_format({'font_color': 'white', 'bg_color': '#52b788',
                                                              'align': 'center'})
                 column = col
+                for index, d in enumerate(list(dict.fromkeys(t[1])), start=column):
+                    # adding days
+                    self.worksheet.write(1, index + 1, d, days_cell_format)
+                    print(index)
+
                 for index, d in enumerate(t[1]):
-                    # create date cells
-                    self.worksheet.write(1, column+1, d, days_cell_format)
                     # add tasks for each day using the hour and date info
                     h = t[2][index]
-                    if h in range(4, 24):
-                        self.worksheet.write(h-2, column+1, str(t[3][index]), task_cell_format)
+
                     if column < col + len(t[1]):
-                        if (index > 0 and t[1][index-1] != d) or (index == 0 and len(t[1]) > 1 and t[1][index+1] != d):
+                        if (index > 0 and t[1][index - 1] != d) or (
+                                index == 0 and len(t[1]) > 1 and t[1][index + 1] != d):
                             column += 1
-                            continue
+
+                    if h in range(4, 24):
+                        self.worksheet.write(h - 2, column+1, str(t[3][index]), task_cell_format)
+                    else:
+                        self.worksheet.write(h + 22, column+1, str(t[3][index]), task_cell_format)
+
             else:
                 self.worksheet.write(0, col + len(t[1]), str(t[0]), date_cell_format)
                 self.worksheet.write(1, col + len(t[1]), t[1][0], days_cell_format)
-            col += len(t[1])
+            col += len(list(dict.fromkeys(t[1])))
 
     def change_tasks_format(self):
         data = []
